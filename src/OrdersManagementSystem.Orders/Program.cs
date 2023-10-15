@@ -8,10 +8,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+var connString = builder.Configuration.GetConnectionString("OrdersDb");
 
 builder.Services.AddDbContext<OrdersManagementSystem.Orders.Repositories.OrdersContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("OrdersDb"));
+    options.UseNpgsql(connString);
 });
 
 var app = builder.Build();

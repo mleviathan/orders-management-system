@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrdersManagementSystem.Models;
 
+[Table("Addresses")]
 public class Address
 {
     [Key]
@@ -15,4 +17,6 @@ public class Address
 
     [Required]
     public string Country { get; set; }
+
+    public virtual Order Order { get; set; }
 }

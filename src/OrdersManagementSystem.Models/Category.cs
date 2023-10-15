@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrdersManagementSystem.Models;
 
+[Table("Categories")]
 public class Category
 {
     [Key]
@@ -10,5 +12,5 @@ public class Category
     [Required]
     public string Name { get; set; }
 
-    public virtual List<Order> Orders { get; set; }
+    public virtual List<Product> Products { get; set; }
 }
