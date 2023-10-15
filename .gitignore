@@ -1,0 +1,6 @@
+src/OrdersManagementSystem.Models/bin
+src/OrdersManagementSystem.Models/obj
+src/OrdersManagementSystem.Orders/bin
+src/OrdersManagementSystem.Orders/obj
+tests/OrdersManagementSystem.Orders.Tests/bin
+tests/OrdersManagementSystem.Orders.Tests/obj
