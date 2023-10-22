@@ -26,3 +26,4 @@ per farmi generare lo script SQL e lo eseguo manualmente tramite DBeaver.
  - Tests
  - Verify emails via regex
  - Remove nullability on Products from Order entity
+ - Paginate results of GetOrders

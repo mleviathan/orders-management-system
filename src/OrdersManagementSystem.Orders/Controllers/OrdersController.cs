@@ -40,7 +40,7 @@ public class OrdersController : ControllerBase
             return NotFound();
         }
 
-        return Ok(order);
+        return order.Value;
     }
 
     /// <summary>
@@ -61,7 +61,10 @@ public class OrdersController : ControllerBase
             return BadRequest("Address ID cannot be empty");
         }
 
-        return Ok(_context.GetOrders(userId, addressId));
+        var ordersResult = _context.GetOrders(userId, addressId);
+
+
+        return ordersResult.Value.ToList();
     }
 
     /// <summary>

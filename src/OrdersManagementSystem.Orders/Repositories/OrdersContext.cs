@@ -4,7 +4,7 @@ namespace OrdersManagementSystem.Orders.Repositories;
 
 public class OrdersContext : DbContext
 {
-    #region DbSets
+    #region DbSet
 
     public DbSet<Models.Order> Orders { get; set; } = null!;
 
@@ -24,7 +24,7 @@ public class OrdersContext : DbContext
     /// </summary>
     /// <param name="orderId"></param>
     /// <returns></returns>
-    public Models.OperationResult<Models.Order> GetOrder(Guid orderId)
+    public virtual Models.OperationResult<Models.Order> GetOrder(Guid orderId)
     {
         try
         {
@@ -64,9 +64,10 @@ public class OrdersContext : DbContext
     /// <param name="userId"></param>
     /// <param name="addressId"></param>
     /// <returns></returns>
-    public IEnumerable<Models.Order> GetOrders(Guid? userId, Guid? addressId)
+    public virtual Models.OperationResult<IEnumerable<Models.Order>> GetOrders(Guid? userId, Guid? addressId)
     {
         IEnumerable<Models.Order> orders = Orders;
+
         if (userId.HasValue)
         {
             orders = Orders.Where(o => o.UserId == userId);
@@ -76,7 +77,7 @@ public class OrdersContext : DbContext
             orders = Orders.Where(o => o.AddressId == addressId);
         }
 
-        return orders;
+        return new Models.OperationResult<IEnumerable<Models.Order>> { Value = orders };
     }
 
     /// <summary>
@@ -84,7 +85,7 @@ public class OrdersContext : DbContext
     /// </summary>
     /// <param name="order"></param>
     /// <returns></returns>
-    public Models.OperationResult<Models.Order> CreateOrder(Models.Order order)
+    public virtual Models.OperationResult<Models.Order> CreateOrder(Models.Order order)
     {
         try
         {
@@ -110,7 +111,7 @@ public class OrdersContext : DbContext
     /// Update an Order in DB
     /// </summary>
     /// <param name="order"></param>
-    public bool UpdateOrder(Models.Order order)
+    public virtual bool UpdateOrder(Models.Order order)
     {
         try
         {
@@ -135,7 +136,7 @@ public class OrdersContext : DbContext
     /// Delete an Order from DB
     /// </summary>
     /// <param name="orderId"></param>
-    public bool DeleteOrder(Guid orderId)
+    public virtual bool DeleteOrder(Guid orderId)
     {
         try
         {

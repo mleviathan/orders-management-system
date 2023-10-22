@@ -4,6 +4,7 @@ using Moq;
 using OrdersManagementSystem.Models;
 using OrdersManagementSystem.Orders.Controllers;
 using OrdersManagementSystem.Orders.Repositories;
+using Xunit.Sdk;
 
 namespace OrdersManagementSystem.Orders.Tests;
 
@@ -22,7 +23,7 @@ public class OrderControllerTests
         public OrdersControllerTests()
         {
             _mockContext = new Mock<OrdersContext>();
-            _mockContext.Setup(c => c.Orders).Returns(MockDbSet(_orders));
+            this.MockDbSet();
             _controller = new OrdersController(_mockContext.Object);
         }
 
@@ -48,20 +49,28 @@ public class OrderControllerTests
             var result = _controller.Get(_orders.First().Id);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            var okResult = Assert.IsType<ActionResult<Order>>(result);
             var model = Assert.IsAssignableFrom<Order>(okResult.Value);
             Assert.IsType<Order>(model);
         }
 
-        private DbSet<T> MockDbSet<T>(IEnumerable<T> data) where T : class
+        [Fact]
+        public async Task GetFiltered_ReturnsOrders()
         {
-            var queryableData = data.AsQueryable();
-            var mockSet = new Mock<DbSet<T>>();
-            mockSet.As<IQueryable<T>>().Setup(m => m.Provider).Returns(queryableData.Provider);
-            mockSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(queryableData.Expression);
-            mockSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(queryableData.ElementType);
-            mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(queryableData.GetEnumerator());
-            return mockSet.Object;
+            // Arrange
+
+            // Act
+            var result = _controller.GetFiltered(It.IsAny<Guid>(), It.IsAny<Guid>());
+
+            // Assert
+            var okResult = Assert.IsType<ActionResult<IEnumerable<Order>>>(result);
+            var model = Assert.IsAssignableFrom<IEnumerable<Order>>(okResult.Value);
+        }
+
+        private void MockDbSet()
+        {
+            _mockContext.Setup(c => c.GetOrder(_orders.First().Id)).Returns(new OperationResult<Order> { Value = _orders.First() });
+            _mockContext.Setup(c => c.GetOrders(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(new OperationResult<IEnumerable<Order>> { Value = _orders });
         }
     }
 }
