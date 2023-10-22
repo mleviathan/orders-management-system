@@ -56,7 +56,7 @@ public class OrdersController : ControllerBase
             return BadRequest("User ID cannot be empty");
         }
 
-        if (userId == Guid.Empty)
+        if (addressId == Guid.Empty)
         {
             return BadRequest("Address ID cannot be empty");
         }
@@ -72,9 +72,9 @@ public class OrdersController : ControllerBase
     /// </summary>
     /// <param name="order">Order object to persist in DB</param>
     /// <returns>201 with given order if successful</returns>
-    /// <response code="200">If the Order was successfully created</response>
+    /// <response code="201">If the Order was successfully created</response>
     /// <response code="400">If there was an error creating the entity</response>
-    [HttpPost(Name = "Order")]
+    [HttpPost("Order")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult<Models.Order> Post(Models.Order order)
@@ -97,7 +97,7 @@ public class OrdersController : ControllerBase
             return BadRequest(creationResult.Message);
         }
 
-        return creationResult.Value;
+        return Created("order", creationResult.Value);
     }
 
     /// <summary>
@@ -105,22 +105,72 @@ public class OrdersController : ControllerBase
     /// </summary>
     /// <param name="orderId">ID of the Order to update</param>
     /// <param name="order">Updated entity</param>
-    /// <returns>200 if Update was successful</returns>
-    // [HttpPut(Name = "Order")]
-    // public ActionResult Put(Models.Order order)
-    // {
-    //     _context.UpdateOrder(order);
-    // }
+    /// <response code="200">If the Order was successfully updated</response>
+    /// <response code="400">If there was an error creating the entity</response>
+    /// <response code="404">Entity to update was not found</response>
+    [HttpPut("Order")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<Models.Order> Put(Models.Order order)
+    {
+        if (order == null)
+        {
+            return BadRequest("Order cannot be null");
+        }
+
+        // Verify that the order has an ID before searching for it on DB to avoid unnecessary queries
+        if (order.Id == Guid.Empty)
+        {
+            return NotFound();
+        }
+
+        var updateResult = _context.UpdateOrder(order);
+
+        if (updateResult.Message != null)
+        {
+            if (updateResult.Message == $"Order with ID {order.Id} not found")
+            {
+                return NotFound(updateResult.Message);
+            }
+
+            return BadRequest(updateResult.Message);
+        }
+
+        return updateResult.Value;
+    }
 
     /// <summary>
     /// Delete an Order
     /// </summary>
     /// <param name="orderId">ID of the Order to delete</param>
-    /// <returns>200 if the order was removed</returns>
-    // [HttpDelete(Name = "Order")]
-    // public ActionResult<Models.Order> Delete(Guid orderId)
-    // {
-    //     throw new NotImplementedException();
-    //     // return _context.GetOrders(userId, addressId);
-    // }
+    /// <returns></returns>
+    /// <response code="200">If the Order was successfully deleted</response>
+    /// <response code="400">If there was an error deleting the entity</response>
+    /// <response code="404">Entity to delete was not found</response>
+    [HttpDelete("Order")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult Delete(Guid orderId)
+    {
+        if (orderId == Guid.Empty)
+        {
+            return NotFound();
+        }
+
+        var deleteResult = _context.DeleteOrder(orderId);
+
+        if (deleteResult.Message != null)
+        {
+            if (deleteResult.Message == $"Order with ID {orderId} not found")
+            {
+                return NotFound(deleteResult.Message);
+            }
+
+            return BadRequest(deleteResult.Message);
+        }
+
+        return Ok();
+    }
 }

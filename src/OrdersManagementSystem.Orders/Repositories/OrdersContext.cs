@@ -111,24 +111,41 @@ public class OrdersContext : DbContext
     /// Update an Order in DB
     /// </summary>
     /// <param name="order"></param>
-    public virtual bool UpdateOrder(Models.Order order)
+    public virtual Models.OperationResult<Models.Order> UpdateOrder(Models.Order order)
     {
         try
         {
+            if (Orders.Find(order.Id) == null)
+            {
+                return new Models.OperationResult<Models.Order>
+                {
+                    Message = $"Order with ID {order.Id} not found"
+                };
+            }
+
             Orders.Update(order);
 
             int updated = SaveChanges();
 
             if (updated == 1)
             {
-                return true;
+                return new Models.OperationResult<Models.Order>
+                {
+                    Value = order
+                };
             }
 
-            return false;
+            return new Models.OperationResult<Models.Order>
+            {
+                Message = $"An error occured while deleting entity with ID {order.Id}"
+            };
         }
         catch (Exception ex)
         {
-            return false;
+            return new Models.OperationResult<Models.Order>
+            {
+                Message = ex.Message
+            };
         }
     }
 
@@ -136,10 +153,18 @@ public class OrdersContext : DbContext
     /// Delete an Order from DB
     /// </summary>
     /// <param name="orderId"></param>
-    public virtual bool DeleteOrder(Guid orderId)
+    public virtual Models.OperationResult<bool> DeleteOrder(Guid orderId)
     {
         try
         {
+            if (Orders.Find(orderId) == null)
+            {
+                return new Models.OperationResult<bool>
+                {
+                    Message = $"Order with ID {orderId} not found",
+                    Value = false
+                };
+            }
 
             var order = Orders.First(o => o.Id == orderId);
 
@@ -149,14 +174,24 @@ public class OrdersContext : DbContext
 
             if (deleted == 1)
             {
-                return true;
+                return new Models.OperationResult<bool>
+                {
+                    Value = true
+                };
             }
 
-            return false;
+            return new Models.OperationResult<bool>
+            {
+                Message = $"An error occured while deleting entity with ID {orderId}",
+                Value = false
+            };
         }
         catch (Exception ex)
         {
-            return false;
+            return new Models.OperationResult<bool>
+            {
+                Message = ex.Message
+            };
         }
 
     }
