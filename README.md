@@ -18,12 +18,19 @@ La connection string è già impostata nel file `appSettings.json`, è sufficien
 ```
 dotnet ef migrations script
 ```
-per farmi generare lo script SQL e lo eseguo manualmente tramite DBeaver.  
+per far generare lo script SQL ed eseguirlo manualmente tramite DBeaver.  
 
 
-## TODO
- - Localize error messages
- - Tests
- - Verify emails via regex
- - Remove nullability on Products from Order entity
- - Paginate results of GetOrders
+## Wishlist
+Per preparare questo POC per la produzione sarebbe necessario eseguire le seguenti operazioni:
+ - Localizzare i messaggi di errore ed utilizzare uno standard per gli errori delle operazioni CRUD su Database
+ - Scrivere ulteriori test
+ - Verificare email tramite regex
+ - Impaginare i risultati dell'API GetOrders
+ - Log di ogni operazione su livelli differenti in base al tipo di log.
+ - Creare un progetto per ogni entity presente nel Context, nello specifico:
+   - OrdersManagementSystem.Address
+   - OrdersManagementSystem.Category
+   - OrdersManagementSystem.Product
+   - OrdersManagementSystem.Order
+ - (OPZIONALE) Creare un DB per progetto, in alternativa creare un ruolo nel DB per ogni progetto ed assegnare ad ogni progetto una connection string che preveda l'uso dell'utente specifico invece del ruolo di default
